@@ -1,0 +1,67 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.library") version "3.6.3"
+    id("io.micronaut.application") version "3.6.3"
+    id("io.micronaut.aot") version "3.6.3"
+}
+
+version = "0.1"
+group = "com.testsuite"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    //implementation("io.micronaut:micronaut-validation")
+    //implementation project("test-rgb")
+    api 'com.pi4j:pi4j-core:2.4.0'
+    api 'com.pi4j:pi4j-plugin-raspberrypi:2.4.0'
+    api 'com.pi4j:pi4j-plugin-pigpio:2.4.0'
+}
+
+
+application {
+    mainClass.set("com.testsuite.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.testsuite.Application'
+        )
+    }
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.testsuite.*")
+    }
+    aot {
+    // Please review carefully the optimizations enabled below
+    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+    }
+}
+
+
+
